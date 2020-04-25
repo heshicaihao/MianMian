@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.CompanyDao">
+    <select id="complexList" resultMap="companyIndustryMap">
+        select id, short_name, city_id from t_company
+    </select>
+    <resultMap id="companyIndustryMap" type="Company">
+        <id property="id" column="id"/>
+        <result property="shortName" column="short_name"/>
+        <result property="cityId" column="city_id"/>
+
+        <!--加载关联的行业方向列表：调用另外一个功能，进行查询-->
+        <collection property="industryList" ofType="Industry"
+            select="com.itheima.mm.dao.IndustryDao.listByCompanyId"
+            column="id"/>
+    </resultMap>
+</mapper>

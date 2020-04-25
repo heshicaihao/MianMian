@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.QuestionDao">
+    <select id="total" parameterType="QueryPageBean" resultType="long">
+        select count(*) from t_question
+        <where>
+            <if test="queryParams != null">
+                <if test="queryParams.courseId != null">
+                    and course_id = #{queryParams.courseId}
+                </if>
+                <if test="queryParams.difficulty != null">
+                    and difficulty = #{queryParams.difficulty}
+                </if>
+                <if test="queryParams.type != null">
+                    and type = #{queryParams.type}
+                </if>
+                <if test="queryParams.keyWord != null and queryParams.keyWord != ''">
+                    and subject like "%"#{queryParams.keyWord}"%"
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="pageList" parameterType="QueryPageBean" resultType="Question">
+        select id,
+			 id + 1000 number,
+			 (select name from t_course where id = q.course_id) courseName,
+			 subject,
+			 type,
+			 difficulty,
+			 create_date createDate,
+			 (select username from t_user where id = q.user_id) creator,
+			 (select count(*) from tr_member_question where question_id = q.id) usedQty
+        from t_question q
+        <where>
+            <if test="queryParams != null">
+                <if test="queryParams.courseId != null">
+                    and course_id = #{queryParams.courseId}
+                </if>
+                <if test="queryParams.difficulty != null">
+                    and difficulty = #{queryParams.difficulty}
+                </if>
+                <if test="queryParams.type != null">
+                    and type = #{queryParams.type}
+                </if>
+                <if test="queryParams.keyWord != null and queryParams.keyWord != ''">
+                    and subject like "%"#{queryParams.keyWord}"%"
+                </if>
+            </if>
+        </where>
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <insert id="add" parameterType="Question">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        INSERT INTO t_question (
+            number,
+            SUBJECT,
+            type,
+            difficulty,
+            analysis,
+            analysis_video,
+            remark,
+            is_classic,
+            STATUS,
+            review_status,
+            create_date,
+            user_id,
+            company_id,
+            catalog_id,
+            course_id
+        )VALUES(
+            #{number},
+            #{subject},
+            #{type},
+            #{difficulty},
+            #{analysis},
+            #{analysisVideo},
+            #{remark},
+            #{isClassic},
+            #{status},
+            #{reviewStatus},
+            #{createDate},
+            #{userId},
+            #{companyId},
+            #{catalogId},
+            #{courseId}
+        )
+    </insert>
+
+    <update id="review" parameterType="hashmap">
+        update t_question set review_status = #{reviewStatus}, status = #{status}, is_classic = #{isClassic}
+         where id = #{questionId}
+    </update>
+</mapper>

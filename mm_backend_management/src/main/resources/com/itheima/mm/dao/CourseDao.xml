@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.CourseDao">
+    <select id="total" parameterType="QueryPageBean" resultType="Long">
+        select count(*) from t_course
+        <include refid="pageWhere"/>
+    </select>
+
+    <select id="pageList" parameterType="QueryPageBean" resultType="Course">
+        select c.id, c.name, c.is_show isShow, c.create_date createDate,
+             (select username from t_user where id = c.user_id) creator,
+             (select count(*) from t_catalog where course_id = c.id) catalogQty,
+             (select count(*) from t_question where course_id = c.id) questionQty ,
+             (select count(*) from t_tag where course_id = c.id) tagQty
+        from t_course c
+        <include refid="pageWhere"/>
+        order by create_date desc
+         limit #{offset}, #{pageSize}
+    </select>
+
+    <sql id="pageWhere">
+        <where>
+            <if test="queryParams.name != null and queryParams.name != ''">
+                and name like "%"#{queryParams.name}"%"
+            </if>
+            <if test="queryParams.status != null">
+                and is_show = #{queryParams.status}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="add" parameterType="Course">
+        insert into t_course (name, create_date, is_show, user_id)
+            values (#{name},#{createDate},#{isShow},#{userId})
+    </insert>
+
+    <update id="update" parameterType="Course">
+        update t_course set name = #{name}, is_show = #{isShow} where id = #{id}
+    </update>
+
+    <select id="simpleList" resultType="Course">
+        select id, name from t_course
+    </select>
+
+    <select id="complexList" resultMap="courseComplexMap">
+        select id,name from t_course
+    </select>
+    <resultMap id="courseComplexMap" type="Course">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+
+        <!--要加载关联的catalogList。调用一个功能，执行：select id,name from t_catalog where course_id = ?-->
+        <collection property="catalogList" ofType="Catalog"
+            select="com.itheima.mm.dao.CatalogDao.listByCourseId"
+            column="id"/>
+        <!--要加载关联的tagList。调用一个功能，执行：select id,name from t_tag where course_id = ?-->
+        <collection property="tagList" ofType="Tag"
+            select="com.itheima.mm.dao.TagDao.listByCourseId"
+            column="id"/>
+    </resultMap>
+</mapper>

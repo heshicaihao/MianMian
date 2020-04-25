@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.DictDao">
+    <select id="complexList" resultMap="dictMap">
+        select id, data_value from t_dict where pid is null
+    </select>
+    <resultMap id="dictMap" type="Dict">
+        <id property="id" column="id"/>
+        <result property="dataValue" column="data_value"/>
+
+        <!--
+        调用一个方法，查询地区关联的二级地区列表
+            方法里要执行SQL语句：select id, data_value from t_dict where pid = ?
+
+            如果调用的是 当前映射器自己的一个方法，可以直接在映射文件里写配置，而不需要在接口里定义方法
+        -->
+        <collection property="subList" ofType="Dict"
+            select="subList"
+            column="id"/>
+    </resultMap>
+
+    <select id="subList" parameterType="int" resultType="Dict">
+        select id, data_value dataValue from t_dict where pid = #{pid}
+    </select>
+
+</mapper>

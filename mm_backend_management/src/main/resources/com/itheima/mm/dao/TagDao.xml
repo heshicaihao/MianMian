@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.TagDao">
+    <select id="listByCourseId" parameterType="int" resultType="Tag">
+        select id,name from t_tag where course_id = #{courseId}
+    </select>
+
+    <!-- 如果参数是HashMap，在SQL的#{}里，写map的key，就能得到key对应的值-->
+    <insert id="addTagAndQuestionRef" parameterType="hashmap">
+        insert into tr_question_tag (question_id, tag_id)
+        values (#{questionId}, #{tagId})
+    </insert>
+</mapper>

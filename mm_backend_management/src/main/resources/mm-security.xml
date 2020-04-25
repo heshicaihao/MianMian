@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+    <!--
+    每个security标签，配置一个资源 及 需要的角色
+        pattern：页面资源的路径
+        has_role：哪些角色可以访问
+    -->
+    <security pattern="/pages/index.html" has_role="ROLE_ADMIN,ROLE_QUESTION_RECORDER"/>
+    <security pattern="/pages/questionBasicList.html" has_role="ROLE_ADMIN,ROLE_QUESTION_RECORDER"/>
+    <security pattern="/pages/questionClassicList.html" has_role="ROLE_ADMIN"/>
+
+    <!--配置：扫描@PreAuthorize注解的范围。并不需要所有包都扫，只扫描指定范围里的-->
+    <scan package="com.itheima.mm.controller"/>
+</beans>

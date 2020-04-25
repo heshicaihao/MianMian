@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mm.dao.CategoryDao">
+    <select id="listByCatalog" parameterType="HashMap" resultType="hashmap">
+        SELECT
+            id,
+            NAME title ,
+            (select count(*) from t_question q where catalog_id = c.id) allCount,
+            (select count(*) from t_question q where catalog_id = c.id
+              and q.id in (select mq.question_id from tr_member_question mq where member_id = #{memberId})
+        ) finishedCount
+        FROM
+            t_catalog c
+        WHERE
+            c.course_id = #{courseId}
+    </select>
+</mapper>
