@@ -33,7 +33,7 @@
         <okio.version>1.4.0</okio.version>
         <bcprov-jdk16.version>1.45</bcprov-jdk16.version>
         <jedis.version>2.7.0</jedis.version>
-        <jackson.version>2.3.3</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
     </properties>
     <dependencies>
         <!--自定义MVC-->
